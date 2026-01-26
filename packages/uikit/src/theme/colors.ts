@@ -12,3 +12,7 @@ export const colors = {
     description:"#8787A1",
     card_stroke:'#F2F2F2'
 }
+export type ColorName = keyof typeof colors;
+
+
+export const ColorNames = Object.keys(colors) as ColorName[];
