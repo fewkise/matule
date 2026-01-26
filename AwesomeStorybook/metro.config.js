@@ -1,17 +1,28 @@
+
+const path = require('path');
 const { getDefaultConfig } = require("expo/metro-config");
-const path = require('path')
+const { withStorybook } = require("@storybook/react-native/metro/withStorybook");
 
-const projectRoot = __dirname
-const workspaceRoot = path.resolve(projectRoot,'..')
-const config = getDefaultConfig(projectRoot)
+const projectRoot = __dirname;
+const uikitPath = path.resolve(projectRoot, '../packages/uikit'); 
 
-config.watchFolders = [projectRoot, workspaceRoot]
-config.resolver.extraNodeModules = {
-  'uikit':path.resolve(workspaceRoot, 'packages/uikit'),
-  'api-service':path.resolve(workspaceRoot, 'api-service')
-}
-config.resolver.nodeModulesPaths= [
-  path.resolve(workspaceRoot, 'node_modules'),
-  path.resolve(projectRoot, 'api-service')
-]
-module.exports = config
+const config = getDefaultConfig(projectRoot);
+
+config.watchFolders = [
+  uikitPath,
+];
+
+config.resolver = {
+  ...config.resolver,
+  nodeModulesPaths: [
+    path.resolve(projectRoot, 'node_modules'),
+    path.resolve(uikitPath, 'node_modules'),
+  ],
+  extraNodeModules: {
+    uikit: uikitPath,
+  },
+};
+
+module.exports = withStorybook(config, {
+  enabled: process.env.EXPO_PUBLIC_STORYBOOK_ENABLED === "true",
+});
