@@ -6,7 +6,7 @@ const CreatePinScreen = () => {
   const {pin, setPin,handleSavePin} = useCreatePin()
   return (
     <SafeAreaView>
-        <InputField label='Введите пин-код' value={pin} onChangeValue={setPin}/>
+        <InputField label='Введите пин-код' value={pin} onChangeText={setPin}/>
         <Button title='Сохранить пинкод' onPress={handleSavePin}/>
     </SafeAreaView>
   )

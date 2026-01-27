@@ -38,9 +38,9 @@ export const AuthProvider = ({children}:{children:React.ReactNode})=> {
         try {
             const data = await apiService.login(email, password)
             await AsyncStorage.setItem('token', data.access_token)
-            await AsyncStorage.setItem('user', JSON.parse(data.user))
+            await AsyncStorage.setItem('user', JSON.stringify(data.user))
             setToken(data.access_token)
-            setUser(data.user)
+            setUser(JSON.stringify(data.user))
         } catch (e){
             console.log (e.message)
         }

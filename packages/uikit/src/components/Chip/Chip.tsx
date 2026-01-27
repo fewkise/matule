@@ -33,9 +33,7 @@ const Chip:React.FC<ChipI> = ({title, id, onPress, isActive})=>{
 }
 
 const styles = StyleSheet.create({
-    chip:{
-        width:'30%'
-    }
+
 })
 
 export default Chip
