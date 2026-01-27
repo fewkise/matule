@@ -14,8 +14,6 @@ export const useLogin = ()=>{
             await login (email, password)
             if (pin) {
                 navigation.replace('MainApp')
-            } else {
-                navigation.replace('CreatePinScreen')
             }
         } catch (e){
             console.log(e.message)
