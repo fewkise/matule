@@ -6,8 +6,10 @@ import { useCart } from '../../data/cartContext'
 import { AuthContext } from '../../data/authContext'
 import { Alert } from 'react-native'
 import {apiService}from 'api-service'
+import { useError } from '../../data/errorContext'
 type NavigationProp = StackNavigationProp<RootStackParamList, 'CartScreen'>
 const cartPageModule = () => {
+    const { showError } = useError();
     const navigation = useNavigation<NavigationProp>()
     const {user} = useContext(AuthContext)
     const {totalPrice, totalCount, cartItems, clearCart, removeFromCart, changeQuantity} = useCart()
@@ -35,7 +37,7 @@ const cartPageModule = () => {
                 }
             ])
         } catch (e){
-            console.log (e.message)
+            showError(e.message)
         }
 
     }

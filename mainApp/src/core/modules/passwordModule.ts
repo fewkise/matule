@@ -5,11 +5,13 @@ import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { RootStackParamList } from "../../navigation/navigator"
 import { validatePassword } from "../utils/validation"
+import { useError } from '../../data/errorContext'
 type NavigationProp = StackNavigationProp<RootStackParamList, 'PasswordScreen'>
 type RouteProps = RouteProp<RootStackParamList, 'PasswordScreen'>
 import {apiService} from 'api-service'
 import { Alert } from "react-native"
-export const usePassword = ()=>{    
+export const usePassword = ()=>{
+    const { showError } = useError();    
     const route = useRoute<RouteProps>()
     const navigation = useNavigation<NavigationProp>()
     const {userData} = route.params
@@ -31,7 +33,7 @@ export const usePassword = ()=>{
             apiService.login(userData.email, password)
             navigation.navigate('CreatePinScreen')
         } catch (e){
-            console.log(e.message)
+            showError(e.message)
         }
     }
     return {

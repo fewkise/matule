@@ -3,6 +3,7 @@ import React from "react"
 import { createContext, useEffect, useState } from "react"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {apiService}from 'api-service'
+import { useError } from './errorContext'
 interface AuthContextType{
     user:string | null,
     token: string | null,
@@ -16,6 +17,7 @@ interface AuthContextType{
 export const AuthContext = createContext<AuthContextType>({}as AuthContextType)
 
 export const AuthProvider = ({children}:{children:React.ReactNode})=> {
+    const { showError } = useError(); 
     const [user, setUser] = useState <string | null>(null)
     const [token, setToken] = useState<string | null>(null)
     const [pin, setPin] = useState<string | null>(null)
@@ -43,7 +45,7 @@ export const AuthProvider = ({children}:{children:React.ReactNode})=> {
             setToken(data.access_token)
             setUser(data.user);
         } catch (e){
-            console.log (e.message)
+            showError(e.message)
         }
     }
     const logout = async () => {
@@ -52,7 +54,7 @@ export const AuthProvider = ({children}:{children:React.ReactNode})=> {
             await apiService.logout(token);
         }
     } catch (e) {
-        console.error("Ошибка на стороне сервера при логауте", e);
+        showError(e.message)
     } finally {
 
         await Promise.all([
