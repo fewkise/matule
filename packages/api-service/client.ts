@@ -22,7 +22,9 @@ export const request = async (endpoint: string, options: any = {}) => {
                 
             throw new Error(errorMessage);
         }
-
+        if (response.status === 204 || response.headers.get("content-length") === "0") {
+            return {} as any; 
+        }
         return await response.json();
     } catch (e: any) {
         if (e.message === 'Network request failed') {

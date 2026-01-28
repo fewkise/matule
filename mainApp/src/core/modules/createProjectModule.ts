@@ -3,6 +3,8 @@ import React, { useContext, useEffect, useState } from "react"
 import { SheetManager } from "react-native-actions-sheet"
 import { AuthContext } from "../../data/authContext"
 import { Alert } from "react-native"
+import {apiService} from 'api-service'
+import ImagePicker, { PermissionStatus } from 'expo-image-picker'
 import { StackNavigationProp } from "@react-navigation/stack"
 import { useNavigation } from "@react-navigation/native"
 import { RootStackParamList } from "../../navigation/navigator"
@@ -19,10 +21,9 @@ export const useCreateProject = ()=>{
     const [img, setImg] = useState(null)
     const [selectedCategory, setSelectedCategory] = useState(null)
     const {user, token} = useContext(AuthContext)
-    const isMock = true
     const selectImgVars = [
-        {id:1, name:'Загрузить из галереи'},
-        {id:2, name:'Сфотографировать'}
+        {id:1, title:'Загрузить из галереи'},
+        {id:2, title:'Сфотографировать'}
     ]
     const openImgSheet = ()=>{
         SheetManager.show('img-sheet', {
@@ -34,11 +35,6 @@ export const useCreateProject = ()=>{
             }
         })
     }
-    const mock_categories = [
-        {id:1, name:'Хобби'},
-        {id:2, name:'Дом'},
-        {id:3, name:'Работа'}
-    ]
     const clearProject = ()=>{
         setProjectName('')
         setForWho('')
@@ -49,56 +45,48 @@ export const useCreateProject = ()=>{
     const removeImg = ()=>{
         setImg(null)
     }
-    const loadCategories =async ()=>{
-        try {
-            if (isMock){
-                setProjectCategories(mock_categories)
-            }
-        } catch (e){
-            console.log(e.message)
-        }
-    }
-    useEffect (()=>{    
-        loadCategories()
-    }, [])
+    useEffect(() => {
+    const loadCategories = async () => {
+        const data = await apiService.getProjectCategories();
+        console.log("КАТЕГОРИИ ИЗ БД:", data); 
+        setProjectCategories(data);
+    };
+    loadCategories();
+    }, []);
     const pickImage = ()=>{
 
     }
     const createProject = async()=>{
         try {
-            if (img){
-                let image_url = null
-                const fileName = `${Date.now()}-${user.id}`
-                image_url = await apiService.uploadImage(fileName, token, image.uri)
+            let imageUrl = null;
+            if (img) {
+                const fileName = `${Date.now()}-${user.id}.jpg`;
+                imageUrl = await apiService.uploadImage(img.uri, fileName, token);
             }
-            const projectData = {
-                projectName:projectName,
-                forWho:forWho,
-                beginDate:beginDate.toISOString().split('T')[0],
-                endDate:beginDate.toISOString().split('T')[0],
-                user_id:user.id,
-                selectedCategory:selectedCategory,
-                image:image_url
+            const orderData = {
+                projectName:projectName,image_url: imageUrl, user_id:user.id, category_id:selectedCategory.id, forWho:forWho, beginDate:beginDate.toISOString().split('T')[0], endDate:endDate.toISOString().split('T')[0]
             }
-            await apiService.createProject(projectData)
-            Alert.alert('Проект успешно создан','Успех',[
+            await apiService.createProject(orderData, token); 
+            Alert.alert('Проект успешно создан', 'успех' ,[
                 {
-                    text:'Ок',
+                    text:'ok',
                     onPress:()=>{
-                        navigation.navigate('MainApp')
+                        clearProject()
+                        navigation.navigate('ProjectsScreen')
                     }
                 }
             ])
-        } catch (e){
-            console.log(e.message)
-        }
+        }  catch (e) {
+        console.error("ОШИБКА СОЗДАНИЯ:", e); 
+        Alert.alert("Ошибка", e.message || "Не удалось создать проект. Проверьте консоль.");
+    }
     }
     const openSheet = ()=>{
         SheetManager.show('category-project-sheet',{
             payload:{
                 categories:projectCategories,
                 onSelect:(item)=>{
-                    setSelectedCategory(item.name)
+                    setSelectedCategory(item)
                     SheetManager.hide('category-project-sheet')
                 }
             }

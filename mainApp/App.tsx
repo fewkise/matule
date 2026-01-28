@@ -9,15 +9,15 @@ import { CartProvider } from './src/data/cartContext';
 export default function App() {
   return (
     <SafeAreaProvider>
-      <SheetProvider>
-        <NavigationContainer>
-          <CartProvider>
-            <AuthProvider>
+      <AuthProvider> 
+        <CartProvider> 
+          <SheetProvider>
+            <NavigationContainer>
               <MainNavigator/>
-            </AuthProvider>
-          </CartProvider>
-      </NavigationContainer>
-      </SheetProvider>
+            </NavigationContainer>
+          </SheetProvider>
+        </CartProvider>
+      </AuthProvider>
     </SafeAreaProvider>
       
   );
