@@ -27,12 +27,17 @@ export const useCreateProject = ()=>{
         {id:1, title:'Загрузить из галереи'},
         {id:2, title:'Сфотографировать'}
     ]
-    const openImgSheet = ()=>{
+    const openImgSheet = () => {
         SheetManager.show('img-sheet', {
-            payload:{
-                categories:selectImgVars,
-                onSelect:()=>{
-                    SheetManager.hide('img-sheet')
+            payload: {
+                categories: selectImgVars,
+                onSelect: (item: { id: number }) => {
+                    SheetManager.hide('img-sheet');
+                    if (item.id === 1) {
+                        pickImage('gallery');
+                    } else {
+                        pickImage('camera');
+                    }
                 }
             }
         })
@@ -55,9 +60,36 @@ export const useCreateProject = ()=>{
     };
     loadCategories();
     }, []);
-    const pickImage = ()=>{
+    const pickImage = async (mode: 'gallery' | 'camera') => {
+        try {
+            const permission = mode === 'gallery' 
+                ? await ImagePicker.requestMediaLibraryPermissionsAsync()
+                : await ImagePicker.requestCameraPermissionsAsync();
 
-    }
+            if (!permission.granted) {
+                showError(`Нужен доступ к ${mode === 'gallery' ? 'галерее' : 'камере'}`);
+                return;
+            }
+            const result = mode === 'gallery'
+                ? await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    aspect: [4, 3],
+                    quality: 0.5,
+                })
+                : await ImagePicker.launchCameraAsync({
+                    allowsEditing: true,
+                    aspect: [4, 3],
+                    quality: 0.5,
+                });
+
+            if (!result.canceled) {
+                setImg(result.assets[0]);
+            }
+        } catch (e) {
+            showError("Не удалось получить изображение");
+        }
+    };
     const createProject = async()=>{
         try {
             let imageUrl = null;
