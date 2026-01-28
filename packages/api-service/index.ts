@@ -30,7 +30,7 @@ export const apiService = {
             quantity: quantity 
         })
     });
-},
+    },
 
     getProducts: async (search = '', categoryId = null) => {
     let endpoint = '/rest/v1/products?select=*';
