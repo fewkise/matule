@@ -56,7 +56,6 @@ export const useCreateProject = ()=>{
     useEffect(() => {
     const loadCategories = async () => {
         const data = await apiService.getProjectCategories();
-        console.log("КАТЕГОРИИ ИЗ БД:", data); 
         setProjectCategories(data);
     };
     loadCategories();
