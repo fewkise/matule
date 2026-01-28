@@ -3,8 +3,9 @@ import React, { useContext, useEffect, useState } from "react"
 import { SheetManager } from "react-native-actions-sheet"
 import { AuthContext } from "../../data/authContext"
 import { Alert } from "react-native"
+import * as ImagePicker from 'expo-image-picker';
 import {apiService} from 'api-service'
-import ImagePicker, { PermissionStatus } from 'expo-image-picker'
+import { PermissionStatus } from 'expo-image-picker'
 import { StackNavigationProp } from "@react-navigation/stack"
 import { useNavigation } from "@react-navigation/native"
 import { RootStackParamList } from "../../navigation/navigator"

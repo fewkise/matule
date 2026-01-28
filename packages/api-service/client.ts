@@ -3,14 +3,19 @@ const URL = 'https://ewwkuaqdvmxyasybbslp.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3d2t1YXFkdm14eWFzeWJic2xwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMDM2OTgsImV4cCI6MjA4MjU3OTY5OH0.AQUYNsKWSboZJAqIchcffiVeOiXZ85BO79IBD0H-2x0'
 export const request = async (endpoint: string, options: any = {}) => {
     try {
+        const headers: any = {
+            'apikey': supabaseKey,
+            ...options.headers,
+        };
+        if (!(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+
         const response = await fetch(`${URL}${endpoint}`, {
             ...options,
-            headers: {
-                'apikey': supabaseKey,
-                'Content-Type': 'application/json',
-                ...options.headers,
-            },
+            headers: headers
         });
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             const errorMessage = 
@@ -22,9 +27,11 @@ export const request = async (endpoint: string, options: any = {}) => {
                 
             throw new Error(errorMessage);
         }
+
         if (response.status === 204 || response.headers.get("content-length") === "0") {
             return {} as any; 
         }
+
         return await response.json();
     } catch (e: any) {
         if (e.message === 'Network request failed') {
@@ -33,3 +40,4 @@ export const request = async (endpoint: string, options: any = {}) => {
         throw e;
     }
 };
+

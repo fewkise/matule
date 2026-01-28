@@ -17,7 +17,7 @@ export const useProjects = () => {
     }
     const loadProjects = async () => {
         try {
-            // if (!token || !user?.id) return;
+            if (!token || !user?.id) return;
             
             setLoading(true);
             const data = await apiService.getProjects(user.id, token);

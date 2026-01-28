@@ -29,7 +29,7 @@ export const AuthProvider = ({children}:{children:React.ReactNode})=> {
                 AsyncStorage.getItem('token'),
                 AsyncStorage.getItem('pin')
             ])
-            // await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 2000));
             if (sUser) setUser(JSON.parse(sUser));
             if (sToken) setToken (sToken)
             if (sPin) setPin (sPin)
