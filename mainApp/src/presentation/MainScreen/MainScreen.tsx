@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { View, FlatList, ScrollView, StyleSheet } from 'react-native'
+import { View, FlatList, ScrollView, StyleSheet, RefreshControl } from 'react-native'
 import { Chip, ProductCard, Search, CartBadge } from 'uikit'
 import { mainModule } from '../../core/modules/mainModule'
 
 const MainScreen = () => {
-    const { products, categories, handleNavigate, openSheet,selectedCategory, cartItems, totalPrice, addToCart, setSelectedCategory, searchQuery, setSearchQuery } = mainModule()
+    const { products, categories, refreshing, onRefresh, setRefreshing, loadProducts,  handleNavigate, openSheet,selectedCategory, cartItems, totalPrice, addToCart, setSelectedCategory, searchQuery, setSearchQuery } = mainModule()
     
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <Search value={searchQuery} onChangeText={setSearchQuery} />
@@ -39,6 +40,9 @@ const MainScreen = () => {
                 data={products} 
                 keyExtractor={(item) => item.id.toString()} 
                 contentContainerStyle={{ paddingBottom: 80 }}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
                 renderItem={({ item }) => (
                     <ProductCard 
                         title={item.title} 
