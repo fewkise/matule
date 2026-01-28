@@ -5,8 +5,10 @@ import { useNavigation } from '@react-navigation/native'
 import { RootStackParamList } from '../../navigation/navigator'
 import { useCart } from '../../data/cartContext'
 import { SheetManager } from 'react-native-actions-sheet'
+import { useError } from '../../data/errorContext'
 type NavigationProp = StackNavigationProp<RootStackParamList, 'CartScreen'>
 export const mainModule = () => {
+    const { showError } = useError();
     const navigation = useNavigation<NavigationProp>()
     const [products, setProducts] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
@@ -24,19 +26,12 @@ export const mainModule = () => {
     const handleNavigate = ()=>{
         navigation.navigate('CartScreen')
     }
-    const filteredItems = products.filter((item)=>{
-        const matchesCategory = selectedCategory
-        ? item.category_id === selectedCategory
-        : true
-        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase())
-        return matchesCategory && matchesSearch
-    })
     const loadProducts = async () => {
         try {
             const data = await apiService.getProducts(searchQuery, selectedCategory);
             setProducts(data);
         } catch (e) {
-            console.log(e.message);
+            showError(e.message)
         }
     };
     const loadCategories = async ()=>{
@@ -44,7 +39,7 @@ export const mainModule = () => {
             const data = await apiService.getCategories()
             setCategories(data)
         } catch (e){
-            console.log(e.message)
+            showError(e.message)
         }
     }
     useEffect(() => {

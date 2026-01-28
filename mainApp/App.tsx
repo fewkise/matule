@@ -6,10 +6,12 @@ import { MainNavigator } from './src/navigation/navigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SheetProvider } from 'react-native-actions-sheet';
 import { CartProvider } from './src/data/cartContext';
+import { ErrorProvider } from './src/data/errorContext';
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AuthProvider> 
+      <ErrorProvider>
+        <AuthProvider> 
         <CartProvider> 
           <SheetProvider>
             <NavigationContainer>
@@ -18,6 +20,7 @@ export default function App() {
           </SheetProvider>
         </CartProvider>
       </AuthProvider>
+      </ErrorProvider>
     </SafeAreaProvider>
       
   );

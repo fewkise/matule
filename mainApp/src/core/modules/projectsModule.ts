@@ -4,8 +4,10 @@ import { apiService } from 'api-service';
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { RootStackParamList } from "../../navigation/navigator"
+import { useError } from '../../data/errorContext'
 type NavigationProp = StackNavigationProp<RootStackParamList, 'CreateProjectScreen'>
 export const useProjects = () => {
+    const { showError } = useError(); 
     const { token, user } = useContext(AuthContext); 
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ export const useProjects = () => {
             const data = await apiService.getProjects(user.id, token);
             setProjects(data);
         } catch (e: any) {
-            console.error("Ошибка загрузки проектов:", e.message);
+            showError(e.message)
         } finally {
             setLoading(false);
         }

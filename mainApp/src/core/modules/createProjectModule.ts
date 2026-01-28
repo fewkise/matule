@@ -8,8 +8,10 @@ import ImagePicker, { PermissionStatus } from 'expo-image-picker'
 import { StackNavigationProp } from "@react-navigation/stack"
 import { useNavigation } from "@react-navigation/native"
 import { RootStackParamList } from "../../navigation/navigator"
+import { useError } from '../../data/errorContext'
 type NavigationProp = StackNavigationProp<RootStackParamList, 'MainApp'>
 export const useCreateProject = ()=>{
+    const { showError } = useError();
     const navigation = useNavigation<NavigationProp>()
     const [projectName, setProjectName] = useState('')
     const [forWho, setForWho] = useState('')
@@ -77,8 +79,7 @@ export const useCreateProject = ()=>{
                 }
             ])
         }  catch (e) {
-        console.error("ОШИБКА СОЗДАНИЯ:", e); 
-        Alert.alert("Ошибка", e.message || "Не удалось создать проект. Проверьте консоль.");
+        showError(e.message) 
     }
     }
     const openSheet = ()=>{

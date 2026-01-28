@@ -2,7 +2,7 @@ import React, { useContext } from "react"
 import { createContext, useMemo, useState } from "react"
 import {apiService} from 'api-service'
 import { AuthContext } from "./authContext"
-
+import { useError } from './errorContext'
 interface CartItem {
     id:number | string,
     price:number,
@@ -22,6 +22,7 @@ interface CartContextType {
 export const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export const CartProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
+    const { showError } = useError(); 
     const {user} = useContext(AuthContext)
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const addToCart = async (product: any) => {
@@ -37,7 +38,7 @@ export const CartProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
         try {
             await apiService.syncCartItem(user.id, product.id, 1);
         } catch (e) {
-            console.error("Ошибка синхронизации корзины:", e.message);
+            showError(e.message)
         }
     }
     };
@@ -61,7 +62,7 @@ export const CartProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
                 await apiService.removeFromCartRequest(user.id, id);
             }
         } catch (e) {
-            console.error("Ошибка обновления корзины:", e.message);
+            showError(e.message)
         }
     }
     };
