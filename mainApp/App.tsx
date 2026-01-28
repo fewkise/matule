@@ -1,34 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'
+import { AppState } from 'react-native'
 import './sheets'
-import { NavigationContainer } from '@react-navigation/native';
-import { AuthProvider } from './src/data/authContext';
-import { MainNavigator } from './src/navigation/navigator';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { SheetProvider } from 'react-native-actions-sheet';
-import { CartProvider } from './src/data/cartContext';
-import { ErrorProvider } from './src/data/errorContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-const NAVIGATION_STATE_KEY = 'PASSED_NAVIGATION_STATE';
+import { NavigationContainer } from '@react-navigation/native'
+import { AuthProvider } from './src/data/authContext'
+import { MainNavigator } from './src/navigation/navigator'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { SheetProvider } from 'react-native-actions-sheet'
+import { CartProvider } from './src/data/cartContext'
+import { ErrorProvider } from './src/data/errorContext'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { requestPermissions, missingNofification, cancelNotification } from './src/data/services/notificationService'
+
+const NAVIGATION_STATE_KEY = 'PASSED_NAVIGATION_STATE'
+
 export default function App() {
-  const [isReady, setIsReady] = useState(false);
-  const [initialState, setInitialState] = useState();
+  const [isReady, setIsReady] = useState(false)
+  const [initialState, setInitialState] = useState()
+  const appState = useRef(AppState.currentState)
 
   useEffect(() => {
+    requestPermissions()
+    cancelNotification()
+
     const restoreState = async () => {
       try {
-        const savedStateString = await AsyncStorage.getItem(NAVIGATION_STATE_KEY);
-        const state = savedStateString ? JSON.parse(savedStateString) : undefined;
-        if (state) setInitialState(state);
+        const savedStateString = await AsyncStorage.getItem(NAVIGATION_STATE_KEY)
+        const state = savedStateString ? JSON.parse(savedStateString) : undefined
+        if (state) setInitialState(state)
       } catch (e) {
-        console.error("Ошибка восстановления навигации", e);
+        console.log(e)
       } finally {
-        setIsReady(true);
+        setIsReady(true)
       }
-    };
-    restoreState();
-  }, []);
+    }
+    restoreState()
 
-  if (!isReady) return null;
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.current === 'active' && nextAppState.match(/inactive|background/)) {
+        missingNofification()
+      }
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        cancelNotification()
+      }
+      appState.current = nextAppState
+    })
+
+    return () => subscription.remove()
+  }, [])
+
+  if (!isReady) return null
 
   return (
     <SafeAreaProvider>
@@ -39,7 +59,7 @@ export default function App() {
               <NavigationContainer
                 initialState={initialState}
                 onStateChange={(state) => {
-                  AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(state));
+                  AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(state))
                 }}
               >
                 <MainNavigator/>
@@ -49,5 +69,5 @@ export default function App() {
         </AuthProvider>
       </ErrorProvider>
     </SafeAreaProvider>
-  );
+  )
 }

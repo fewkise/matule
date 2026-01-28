@@ -14,6 +14,7 @@ import CatalogueScreen from '../presentation/CatalogueScreen/CatalogueScreen'
 import ProjectsScreen from '../presentation/ProjectsScreen/ProjectsScreen'
 import CreateProjectScreen from '../presentation/CreateProjectScreen/CreateProjectScreen'
 import ProfileScreen from '../presentation/ProfileScreen/ProfileScreen'
+import SplashScreen from '../presentation/SplashScreen/SplashScreen'
 export type RootStackParamList ={
     LoginScreen:undefined,
     RegisterScreen:undefined,
@@ -39,7 +40,10 @@ export const TabNavigator = ()=>{
     )
 }
 export const MainNavigator = ()=>{
-    const {pin, token} = useContext(AuthContext)
+    const {pin, token, isLoading} = useContext(AuthContext)
+        if (isLoading) {
+        return <SplashScreen />
+    }
     return (
         <Stack.Navigator >
             {!token ? (

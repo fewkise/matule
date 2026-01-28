@@ -18,10 +18,10 @@ export const usePassword = ()=>{
     const [password, setPassword] = useState('')
     const handleRegister = ()=>{
         const validation = validatePassword(password);
-        // if (!validation.isValid) {
-        //     Alert.alert('Ошибка валидации', validation.message);
-        //     return;
-        // }
+        if (!validation.isValid) {
+            Alert.alert('Ошибка валидации', validation.message);
+            return;
+        }
         try {
             apiService.registerUser(userData.email, password, {
             firstName:userData.firstName,
