@@ -38,7 +38,7 @@ const CategorySheet = (props: SheetProps<"category-sheet">) => {
               }}
               style={{ paddingVertical: 15, borderBottomWidth: 0.5, borderColor: '#eee' }}
             >
-              <Text>{item.name}</Text>
+              <Text>{item.title}</Text>
             </TouchableOpacity>
           )}
         />

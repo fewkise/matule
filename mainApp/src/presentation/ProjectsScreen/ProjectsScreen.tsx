@@ -10,16 +10,15 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 export const ProjectsScreen = () => {
     const navigation = useNavigation<NavigationProp>();
-    const { projects, loading, refresh } = useProjects();
-
-    const handleCreateProject = () => {
-        navigation.navigate('CreateProjectScreen');
-    };
+    const { projects, loading, refresh, handleNavigate } = useProjects();
 
     if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
 
     return (
         <View style={styles.container}>
+            <View style={styles.buttonWrapper}>
+                <Button title='Создать проект' onPress={handleNavigate} />
+            </View>
             <FlatList
                 data={projects}
                 keyExtractor={(item) => item.id.toString()}
@@ -33,9 +32,7 @@ export const ProjectsScreen = () => {
                     />
                 )}
             />
-            <View style={styles.buttonWrapper}>
-                <Button onPress={handleCreateProject} />
-            </View>
+            
         </View>
     );
 };
@@ -49,12 +46,7 @@ const styles = StyleSheet.create({
         padding: 16,
         paddingBottom: 100,
     },
-    buttonWrapper: {
-        position: 'absolute',
-        bottom: 20,
-        left: 16,
-        right: 16,
-    }
+
 });
 
 export default ProjectsScreen;

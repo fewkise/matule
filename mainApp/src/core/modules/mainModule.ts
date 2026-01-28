@@ -13,7 +13,6 @@ export const mainModule = () => {
     const [categories, setCategories] = useState([])
     const [selectedCategory, setSelectedCategory] = useState(null)
     const {cartItems, totalPrice, addToCart} = useCart()
-    const [showSheet, setShowSheet] = useState(false)
     const openSheet = (item)=>{
         SheetManager.show('description-sheet',{
             payload:{
@@ -32,14 +31,14 @@ export const mainModule = () => {
         const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase())
         return matchesCategory && matchesSearch
     })
-    const loadProducts = async ()=>{
+    const loadProducts = async () => {
         try {
-            const data = await apiService.getProducts()
-            setProducts(data)
-        } catch (e){
-            console.log(e.message)
+            const data = await apiService.getProducts(searchQuery, selectedCategory);
+            setProducts(data);
+        } catch (e) {
+            console.log(e.message);
         }
-    }
+    };
     const loadCategories = async ()=>{
         try {
             const data = await apiService.getCategories()
@@ -48,11 +47,16 @@ export const mainModule = () => {
             console.log(e.message)
         }
     }
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            loadProducts();
+        }, 400);
+        return () => clearTimeout(delayDebounce);
+    }, [searchQuery, selectedCategory]);
     useEffect(()=>{
-        loadProducts()
         loadCategories()
     }, [])
   return {
-    products:filteredItems, openSheet,handleNavigate, cartItems, totalPrice, addToCart, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery, categories
+    products, openSheet,handleNavigate, cartItems, totalPrice, addToCart, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery, categories
   }
 }

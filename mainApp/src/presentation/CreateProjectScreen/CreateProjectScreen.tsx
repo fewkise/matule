@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useCreateProject } from '../../core/modules/createProjectModule'
 import {View, TouchableOpacity,Text} from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import {CategorySheet, InputField, Select} from 'uikit'
+import {CategorySheet, InputField, Select, Button} from 'uikit'
 const CreateProjectScreen = () => {
     const {
         projectName,
@@ -56,7 +56,7 @@ const CreateProjectScreen = () => {
             setEndDate(date)
             setShowEnd(false)
         }}/>}
-
+        <Button title='Отправить' onPress={createProject}/>
     </SafeAreaView>
   )
 }

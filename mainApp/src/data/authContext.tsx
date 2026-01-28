@@ -28,9 +28,10 @@ export const AuthProvider = ({children}:{children:React.ReactNode})=> {
                 AsyncStorage.getItem('pin')
             ])
             // await new Promise(resolve => setTimeout(resolve, 2000));
-            if (sUser) setUser(sUser)
+            if (sUser) setUser(JSON.parse(sUser));
             if (sToken) setToken (sToken)
             if (sPin) setPin (sPin)
+            setIsLoading(false);
         }
         loadStorage()
     }, [])
@@ -40,19 +41,31 @@ export const AuthProvider = ({children}:{children:React.ReactNode})=> {
             await AsyncStorage.setItem('token', data.access_token)
             await AsyncStorage.setItem('user', JSON.stringify(data.user))
             setToken(data.access_token)
-            setUser(JSON.stringify(data.user))
+            setUser(data.user);
         } catch (e){
             console.log (e.message)
         }
     }
-    const logout = async ()=>{
-        await AsyncStorage.removeItem('user')
-        await AsyncStorage.removeItem('token')
-        await AsyncStorage.removeItem('pin')
-        setToken(null)
-        setUser(null)
-        setPin(null)
+    const logout = async () => {
+    try {
+        if (token) {
+            await apiService.logout(token);
+        }
+    } catch (e) {
+        console.error("Ошибка на стороне сервера при логауте", e);
+    } finally {
+
+        await Promise.all([
+            AsyncStorage.removeItem('user'),
+            AsyncStorage.removeItem('token'),
+            AsyncStorage.removeItem('pin')
+        ]);
+        setToken(null);
+        setUser(null);
+        setPin(null);
     }
+};
+
     const savePin = (newPin:string)=>{
         AsyncStorage.setItem('pin',newPin)
         setPin(newPin)

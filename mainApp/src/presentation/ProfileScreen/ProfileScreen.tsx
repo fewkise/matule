@@ -8,6 +8,7 @@ const ProfileScreen = () => {
   return (
     <SafeAreaView>
         <Text>Анастасия</Text>
+        <Text>{user.email}</Text>
         <Button title='Выйти' onPress={logout}/>
     </SafeAreaView>
   )
